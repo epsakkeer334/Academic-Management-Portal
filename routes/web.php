@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Livewire\Admin\Auth\Login;
+use App\Http\Livewire\Admin\Courses\CoursesComponent;
+use App\Http\Livewire\Admin\Curriculums\CurriculumsComponent;
 use App\Http\Livewire\Admin\Dashboard\Dashboard as AdminDashboard;
 use App\Http\Livewire\Admin\Permissions\PermissionsComponent;
 use App\Http\Livewire\Admin\Roles\RolesComponent;
@@ -30,6 +32,8 @@ Route::prefix('admin')->middleware(['auth', 'role:super-admin'])->group(function
     Route::get('/roles', RolesComponent::class)->name('admin.roles');
     Route::get('/permissions', PermissionsComponent::class)->name('admin.permissions');
 
+    Route::get('/courses', CoursesComponent::class)->name('admin.courses');
+    Route::get('/curriculums', CurriculumsComponent::class)->name('admin.curriculums');
 
 });
 

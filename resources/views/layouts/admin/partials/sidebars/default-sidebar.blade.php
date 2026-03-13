@@ -41,6 +41,40 @@
 
                 @hasrole('super-admin')
 
+                <!-- GENERAL MANAGEMENT -->
+                <li class="menu-title"><span>General Management</span></li>
+                <li>
+                    <ul>
+                        <!-- Categories -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*']) ? 'active subdrop' : '' }}">
+                                <i class="ti ti-book"></i>
+                                <span>General Management</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*']) ? 'display: block;' : '' }}">
+
+                                <li>
+                                    <a href="{{ route('admin.courses') }}" class="menu-item {{ request()->routeIs('admin.courses*') ? 'active' : '' }}">
+                                        <i class="ti ti-book"></i> Manage Courses
+                                    </a>
+                                </li>
+
+
+                                <li>
+                                    <a href="{{ route('admin.curriculums') }}" class="menu-item {{ request()->routeIs('admin.curriculums*') ? 'active' : '' }}">
+                                        <i class="ti ti-books"></i> Manage Curriculums
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+
                 <!-- PRODUCTS MANAGEMENT -->
                 <li class="menu-title"><span>Access Management</span></li>
                 <li>
@@ -53,17 +87,19 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul style="{{ isActiveMenu(['admin.users*', 'admin.roles*', 'admin.permissions*']) ? 'display: block;' : '' }}">
-                                <li class="menu-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.users') }}">
-                                        <i class="ti ti-user"></i> Manage Users
+
+                                <li>
+                                    <a href="{{ route('admin.users') }}" class="menu-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                                        <i class="ti ti-users"></i> Manage Users
                                     </a>
                                 </li>
-                                <li class="menu-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
+
+                                <li>
                                     <a href="{{ route('admin.roles') }}" class="menu-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
                                         <i class="ti ti-shield"></i> Manage Roles
                                     </a>
                                 </li>
-                                <li class="menu-item {{ request()->routeIs('admin.permissions*') ? 'active' : '' }}">
+                                <li>
                                     <a href="{{ route('admin.permissions') }}" class="menu-item {{ request()->routeIs('admin.permissions*') ? 'active' : '' }}">
                                         <i class="ti ti-key"></i> Manage Permissions
                                     </a>

@@ -16,6 +16,10 @@
             <button type="button" wire:click="openModal" class="btn btn-primary d-flex align-items-center shadow-sm">
                 <i class="ti ti-circle-plus me-2"></i> Add Role
             </button>
+            <a href="javascript:void(0);" class="btn btn-outline-light border d-flex align-items-center justify-content-center p-2"
+               data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse Header" id="collapse-header">
+                <i class="ti ti-chevrons-up text-secondary"></i>
+            </a>
         </div>
     </div>
 
