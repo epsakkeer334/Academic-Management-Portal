@@ -47,12 +47,12 @@
                     <ul>
                         <!-- Categories -->
                         <li class="submenu">
-                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*']) ? 'active subdrop' : '' }}">
+                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'active subdrop' : '' }}">
                                 <i class="ti ti-book"></i>
                                 <span>General Management</span>
                                 <span class="menu-arrow"></span>
                             </a>
-                            <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*']) ? 'display: block;' : '' }}">
+                            <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'display: block;' : '' }}">
 
                                 <li>
                                     <a href="{{ route('admin.courses') }}" class="menu-item {{ request()->routeIs('admin.courses*') ? 'active' : '' }}">
@@ -72,11 +72,8 @@
                                         <i class="ti ti-building-community"></i> Manage Institutes
                                     </a>
                                 </li>
-
                             </ul>
                         </li>
-
-
                     </ul>
                 </li>
 

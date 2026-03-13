@@ -5,7 +5,7 @@
             <h2 class="mb-1 fw-semibold">Institute Management</h2>
             <nav>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="#"><i class="ti ti-smart-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="ti ti-smart-home"></i></a></li>
                     <li class="breadcrumb-item">Admin</li>
                     <li class="breadcrumb-item active">Institutes</li>
                 </ol>
@@ -31,7 +31,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="avatar-sm bg-primary bg-opacity-10 rounded p-3 me-3">
-                            <i class="ti ti-building-community text-warning fs-4"></i>
+                            <i class="ti ti-building-community text-primary fs-4"></i>
                         </div>
                         <div>
                             <h6 class="mb-1">Total Institutes</h6>
@@ -73,35 +73,43 @@
         </div>
     </div>
 
-    <!-- Data Table using common component -->
-    <div class="card shadow-sm border-0">
-        <livewire:admin.components.table.data-table
-            :model-class="\App\Models\Admin\Institute::class"
-            :columns="[
-                ['label' => '#', 'field' => 'id', 'sortable' => true],
-                ['label' => 'Logo', 'field' => 'logo', 'type' => 'image', 'sortable' => false],
-                ['label' => 'Institute', 'field' => 'name', 'sortable' => true],
-                ['label' => 'Code', 'field' => 'code', 'sortable' => true],
-                ['label' => 'Contact', 'field' => 'email', 'sortable' => true],
-                ['label' => 'Location', 'field' => 'city', 'sortable' => true],
-                ['label' => 'State', 'field' => 'state_name', 'sortable' => false],
-                ['label' => 'Status', 'field' => 'status', 'type' => 'status', 'sortable' => true],
-                ['label' => 'Created', 'field' => 'created_at', 'type' => 'datetime', 'format' => 'd M Y', 'sortable' => true],
-                ['label' => 'Actions', 'field' => 'actions', 'type' => 'actions', 'actions' => ['edit', 'delete']]
-            ]"
-            :filters="['All' => 'All', 'Active' => 'Active', 'Inactive' => 'Inactive']"
-            title="Institutes List"
-            :searchable="true"
-            :search-fields="['name', 'code', 'email', 'phone', 'city']"
-            :sortable="true"
-            :default-sort-field="'name'"
-            :default-sort-direction="'asc'"
-            :per-page="10"
-            :per-page-options="[5, 10, 25, 50]"
-            :extra-filters="[
-                ['type' => 'select', 'field' => 'stateFilter', 'label' => 'State', 'options' => $states->pluck('name', 'id')->toArray()]
-            ]"
-        />
+    <div class="content">
+        <!-- Data Table -->
+        <div class="card shadow-sm border-0">
+            <livewire:admin.components.table.data-table
+                :model-class="\App\Models\Admin\Institute::class"
+                :columns="[
+                    ['label' => '#', 'field' => 'id', 'sort' => true],
+                    ['label' => 'Logo', 'field' => 'logo_url', 'type' => 'image-url', 'sortable' => false],
+                    ['label' => 'Institute', 'field' => 'name', 'sortable' => true],
+                    ['label' => 'Code', 'field' => 'code', 'sortable' => true],
+                    ['label' => 'Email', 'field' => 'email', 'sortable' => true],
+                    ['label' => 'Phone', 'field' => 'phone', 'sortable' => true],
+                    ['label' => 'Location', 'field' => 'city', 'sortable' => true],
+                    ['label' => 'State', 'field' => 'state_name', 'sortable' => false],
+                    ['label' => 'Users', 'field' => 'users_count', 'type' => 'badge', 'badge_class' => 'bg-info', 'badge_icon' => 'ti ti-users', 'sortable' => false],
+                    ['label' => 'Status', 'field' => 'status', 'type' => 'status', 'sortable' => true],
+                    ['label' => 'Created', 'field' => 'created_at', 'type' => 'datetime', 'format' => 'd M Y', 'sortable' => true],
+                    ['label' => 'Actions', 'field' => 'actions', 'type' => 'actions', 'actions' => [
+                        'edit',
+                        'delete',
+                        [
+                            'label' => 'Manage Users',
+                            'icon' => 'ti ti-users',
+                            'route' => 'admin.institute.users',
+                            'parameter' => 'instituteId',
+                            'class' => 'btn-outline-info',
+                            'show_label' => false
+                        ]
+                    ]]
+                ]"
+                :filters="['All' => 'All', 'Active' => 'Active', 'Inactive' => 'Inactive']"
+                title="Institutes List"
+            />
+        </div>
+
+        <!-- Include your modals here -->
+
     </div>
 
     <!-- Add/Edit Modal -->
@@ -182,21 +190,23 @@
                             @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
+                        <!-- State field - change from state_id to state -->
                         <div class="col-md-6">
                             <label class="form-label fw-medium">State</label>
-                            <select class="form-select @error('state_id') is-invalid @enderror" wire:model="state_id">
+                            <select class="form-select @error('state') is-invalid @enderror" wire:model="state">
                                 <option value="">Select State</option>
                                 @foreach($states as $state)
                                     <option value="{{ $state->id }}">{{ $state->name }}</option>
                                 @endforeach
                             </select>
-                            @error('state_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @error('state') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
+                        <!-- Country field - keep as is but ensure wire:model is 'country' -->
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Country</label>
                             <input type="text" class="form-control" value="India" readonly disabled>
-                            <input type="hidden" wire:model="country_id" value="1">
+                            <input type="hidden" wire:model="country" value="1">
                             <small class="text-muted">Default: India</small>
                         </div>
 

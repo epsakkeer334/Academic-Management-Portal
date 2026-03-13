@@ -13,8 +13,8 @@ class Institute extends BaseModel
         'phone',
         'address',
         'city',
-        'state_id',
-        'country_id',
+        'state',        // This stores the state ID
+        'country',       // This stores the country ID
         'pincode',
         'logo',
         'website',
@@ -27,22 +27,24 @@ class Institute extends BaseModel
         'status' => 'boolean',
     ];
 
-    protected $appends = ['logo_url', 'country_name', 'state_name', 'full_address'];
+    protected $appends = ['logo_url', 'country_name', 'state_name', 'full_address', 'users_count'];
 
     /**
      * Get the state that the institute belongs to.
+     * Note: The foreign key is 'state' (not 'state_id')
      */
     public function state()
     {
-        return $this->belongsTo(State::class);
+        return $this->belongsTo(State::class, 'state', 'id');
     }
 
     /**
      * Get the country that the institute belongs to.
+     * Note: The foreign key is 'country' (not 'country_id')
      */
     public function country()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(Country::class, 'country', 'id');
     }
 
     /**
@@ -51,6 +53,27 @@ class Institute extends BaseModel
     public function admins()
     {
         return $this->hasMany(User::class)->where('role', 'institute-admin');
+    }
+
+    /**
+     * Get the users assigned to this institute.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'institute_user')
+                    ->withPivot('role', 'is_primary', 'permissions', 'status')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the primary users of the institute.
+     */
+    public function primaryUsers()
+    {
+        return $this->belongsToMany(User::class, 'institute_user')
+                    ->withPivot('role', 'is_primary', 'permissions', 'status')
+                    ->wherePivot('is_primary', true)
+                    ->withTimestamps();
     }
 
     /**
@@ -69,7 +92,18 @@ class Institute extends BaseModel
      */
     public function getCountryNameAttribute()
     {
-        return $this->country ? $this->country->name : 'India';
+        // Check if relationship is loaded and exists
+        if ($this->relationLoaded('country') && $this->country) {
+            return $this->country->name;
+        }
+
+        // If not loaded, try to load it or return default
+        if ($this->country) {
+            $country = Country::find($this->country);
+            return $country ? $country->name : 'India';
+        }
+
+        return 'India';
     }
 
     /**
@@ -77,7 +111,18 @@ class Institute extends BaseModel
      */
     public function getStateNameAttribute()
     {
-        return $this->state ? $this->state->name : '-';
+        // Check if relationship is loaded and exists
+        if ($this->relationLoaded('state') && $this->state) {
+            return $this->state->name;
+        }
+
+        // If not loaded, try to load it or return default
+        if ($this->state) {
+            $state = State::find($this->state);
+            return $state ? $state->name : '-';
+        }
+
+        return '-';
     }
 
     /**
@@ -89,10 +134,18 @@ class Institute extends BaseModel
         if ($this->address) $parts[] = $this->address;
         if ($this->city) $parts[] = $this->city;
         if ($this->state_name && $this->state_name !== '-') $parts[] = $this->state_name;
-        if ($this->country_name) $parts[] = $this->country_name;
+        if ($this->country_name && $this->country_name !== 'India') $parts[] = $this->country_name;
         if ($this->pincode) $parts[] = $this->pincode;
 
         return !empty($parts) ? implode(', ', $parts) : '-';
+    }
+
+    /**
+     * Get users count attribute.
+     */
+    public function getUsersCountAttribute()
+    {
+        return $this->users()->wherePivot('status', 'active')->count();
     }
 
     /**
@@ -142,7 +195,7 @@ class Institute extends BaseModel
     public function scopeByState($query, $stateId)
     {
         if ($stateId) {
-            return $query->where('state_id', $stateId);
+            return $query->where('state', $stateId);
         }
         return $query;
     }

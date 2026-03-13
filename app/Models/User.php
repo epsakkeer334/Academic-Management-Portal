@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Admin\Institute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -148,5 +150,23 @@ class User extends Authenticatable
     public function scopeRecentlyLoggedIn($query, $days = 7)
     {
         return $query->where('last_login_at', '>', now()->subDays($days));
+    }
+
+    public function institutes()
+    {
+        return $this->belongsToMany(Institute::class, 'institute_user')
+                    ->withPivot('role', 'is_primary', 'permissions', 'status')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the primary institute for the user.
+     */
+    public function primaryInstitute()
+    {
+        return $this->belongsToMany(Institute::class, 'institute_user')
+                    ->withPivot('role', 'is_primary', 'permissions', 'status')
+                    ->wherePivot('is_primary', true)
+                    ->withTimestamps();
     }
 }

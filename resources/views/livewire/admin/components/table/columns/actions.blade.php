@@ -1,32 +1,68 @@
+{{-- resources/views/livewire/admin/components/table/columns/actions.blade.php --}}
 @php
-    $allowed = $column['actions'] ?? ['edit', 'delete'];
+    $actions = $column['actions'] ?? ['edit', 'delete'];
 @endphp
 
-<div class="d-flex align-items-center">
-    {{-- 🟩 View button --}}
-    @if(in_array('view', $allowed))
-        <button wire:click="$emit('viewRecord', {{ $row->id }})"
-                class="btn btn-sm btn-outline-info me-1"
-                data-bs-toggle="tooltip" title="View Record">
-            <i class="ti ti-eye"></i>
-        </button>
-    @endif
+<div class="d-flex align-items-center gap-1">
+    @foreach($actions as $action)
+        @if(is_string($action))
+            {{-- Simple string actions --}}
+            @switch($action)
+                @case('view')
+                    <button wire:click="$emit('viewRecord', {{ $row->id }})"
+                            class="btn btn-sm btn-outline-info"
+                            data-bs-toggle="tooltip" title="View Record">
+                        <i class="ti ti-eye"></i>
+                    </button>
+                    @break
 
-    {{-- 🟨 Edit button --}}
-    @if(in_array('edit', $allowed))
-        <button wire:click="$emit('editRecord', {{ $row->id }})"
-                class="btn btn-sm btn-outline-warning me-1"
-                data-bs-toggle="tooltip" title="Edit Record">
-            <i class="ti ti-edit"></i>
-        </button>
-    @endif
+                @case('edit')
+                    <button wire:click="$emit('editRecord', {{ $row->id }})"
+                            class="btn btn-sm btn-outline-warning"
+                            data-bs-toggle="tooltip" title="Edit Record">
+                        <i class="ti ti-edit"></i>
+                    </button>
+                    @break
 
-    {{-- 🟥 Delete button --}}
-    @if(in_array('delete', $allowed))
-        <button wire:click="$emit('deleteRecord', {{ $row->id }})"
-                class="btn btn-sm btn-outline-danger"
-                data-bs-toggle="tooltip" title="Delete Record">
-            <i class="ti ti-trash"></i>
-        </button>
-    @endif
+                @case('delete')
+                    <button wire:click="$emit('deleteRecord', {{ $row->id }})"
+                            class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="tooltip" title="Delete Record">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                    @break
+            @endswitch
+
+        @elseif(is_array($action))
+            {{-- Custom array actions --}}
+            @php
+                $url = '#';
+                if (isset($action['route'])) {
+                    $parameterName = $action['parameter'] ?? 'id';
+                    $parameterValue = $row->{$action['parameter_value'] ?? 'id'};
+                    $url = route($action['route'], [$parameterName => $parameterValue]);
+                }
+            @endphp
+
+            @if(isset($action['route']))
+                <a href="{{ $url }}"
+                   class="btn btn-sm {{ $action['class'] ?? 'btn-outline-secondary' }}"
+                   data-bs-toggle="tooltip" title="{{ $action['label'] ?? 'Action' }}">
+                    <i class="{{ $action['icon'] ?? 'ti ti-click' }}"></i>
+                    @if(isset($action['show_label']) && $action['show_label'])
+                        <span class="ms-1">{{ $action['label'] }}</span>
+                    @endif
+                </a>
+            @else
+                <button wire:click="{{ $action['action'] ?? '#' }}({{ $row->id }})"
+                        class="btn btn-sm {{ $action['class'] ?? 'btn-outline-secondary' }}"
+                        data-bs-toggle="tooltip" title="{{ $action['label'] ?? 'Action' }}">
+                    <i class="{{ $action['icon'] ?? 'ti ti-click' }}"></i>
+                    @if(isset($action['show_label']) && $action['show_label'])
+                        <span class="ms-1">{{ $action['label'] }}</span>
+                    @endif
+                </button>
+            @endif
+        @endif
+    @endforeach
 </div>

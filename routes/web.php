@@ -12,6 +12,8 @@ use App\Http\Livewire\Admin\Institutes\InstitutesComponent;
 use App\Http\Livewire\Admin\Permissions\PermissionsComponent;
 use App\Http\Livewire\Admin\Roles\RolesComponent;
 use App\Http\Livewire\Admin\Users\UsersComponent;
+use App\Http\Livewire\Admin\InstituteUsers\InstituteUsersComponent;
+
 
 // front end section
 
@@ -36,6 +38,7 @@ Route::prefix('admin')->middleware(['auth', 'role:super-admin'])->group(function
     Route::get('/courses', CoursesComponent::class)->name('admin.courses');
     Route::get('/curriculums', CurriculumsComponent::class)->name('admin.curriculums');
     Route::get('/institutes', InstitutesComponent::class)->name('admin.institutes');
+    Route::get('/institutes/{instituteId}/users', InstituteUsersComponent::class)->name('admin.institute.users');
 
 });
 

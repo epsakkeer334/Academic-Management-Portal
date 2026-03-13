@@ -10,9 +10,9 @@
                         <i class="ti ti-filter me-2"></i> {{ $filter }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        @foreach($filters as $filterOption)
+                        @foreach($filters as $key => $value)
                             <li>
-                                <a class="dropdown-item" wire:click="$set('filter', '{{ $filterOption }}')">{{ $filterOption }}</a>
+                                <a class="dropdown-item" wire:click="$set('filter', '{{ $key }}')">{{ $value }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -47,12 +47,22 @@
                 <thead class="table-light">
                     <tr>
                         @foreach($columns as $column)
-                            <th wire:click="sortBy('{{ $column['field'] }}')" style="cursor: pointer;">
-                                {{ $column['label'] }}
-                                @if($sortField === $column['field'])
-                                    <i class="ti {{ $sortDirection === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down' }}"></i>
-                                @endif
-                            </th>
+                            @php
+                                $isSortable = $column['sortable'] ?? true; // Default to true if not specified
+                            @endphp
+
+                            @if($isSortable)
+                                <th wire:click="sortBy('{{ $column['field'] }}')" style="cursor: pointer;">
+                                    {{ $column['label'] }}
+                                    @if($sortField === $column['field'])
+                                        <i class="ti {{ $sortDirection === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down' }}"></i>
+                                    @endif
+                                </th>
+                            @else
+                                <th>
+                                    {{ $column['label'] }}
+                                </th>
+                            @endif
                         @endforeach
                     </tr>
                 </thead>

@@ -10,6 +10,7 @@ use App\Models\Admin\Country;
 use App\Models\Admin\State;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rule;
 
 class InstitutesComponent extends Component
 {
@@ -17,7 +18,8 @@ class InstitutesComponent extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public $name, $code, $email, $phone, $address, $city, $state_id, $country_id = 1;
+    // Institute properties
+    public $name, $code, $email, $phone, $address, $city, $state, $country = 1;
     public $pincode, $logo, $website, $status = 1;
     public $recordId;
     public $isEdit = false;
@@ -37,43 +39,80 @@ class InstitutesComponent extends Component
         'refreshTable' => '$refresh',
     ];
 
-    protected function rules()
+   protected function rules()
     {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:institutes,code,' . $this->recordId,
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'city' => 'nullable|string|max:100',
-            'state_id' => 'nullable|exists:states,id',
-            'country_id' => 'required|exists:countries,id',
-            'pincode' => 'nullable|string|max:20',
-            'website' => 'nullable|string|max:255',
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('institutes', 'name')->ignore($this->recordId)->whereNull('deleted_at'),
+            ],
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('institutes', 'code')->ignore($this->recordId)->whereNull('deleted_at'),
+            ],
+            'email' => [
+                'required',
+                'email:rfc',
+                'max:255',
+                Rule::unique('institutes', 'email')->ignore($this->recordId)->whereNull('deleted_at'),
+            ],
+            'phone' => [
+                'required',
+                'digits:10',
+                Rule::unique('institutes', 'phone')->ignore($this->recordId)->whereNull('deleted_at'),
+            ],
+            'address' => 'required|string|max:500',
+            'city' => 'required|string|max:100',
+            'state' => 'required|exists:states,id',
+            'country' => 'required|exists:countries,id',
+            'pincode' => 'nullable|digits_between:4,10',
+            'website' => 'nullable|url|max:255',
             'status' => 'boolean',
+
+            'logo' => $this->isEdit
+                ? 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+                : 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ];
-
-        if (!$this->isEdit || $this->logo) {
-            $rules['logo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
-        }
-
-        return $rules;
     }
 
     protected function messages()
     {
         return [
+
             'name.required' => 'Institute name is required.',
+            'name.unique' => 'This institute name already exists.',
+
             'code.required' => 'Institute code is required.',
-            'code.unique' => 'This institute code is already taken.',
-            'email.email' => 'Please enter a valid email address.',
-            'state_id.exists' => 'Selected state is invalid.',
-            'country_id.required' => 'Country is required.',
-            'country_id.exists' => 'Selected country is invalid.',
-            'logo.image' => 'The logo must be an image.',
-            'logo.mimes' => 'The logo must be a jpeg, png, jpg, gif, or webp.',
-            'logo.max' => 'The logo size must not exceed 2MB.',
+            'code.unique' => 'This institute code already exists.',
+
+            'email.email' => 'Enter a valid email address.',
+            'email.unique' => 'This email already exists.',
+
+            'phone.digits' => 'Phone number must be exactly 10 digits.',
+            'phone.unique' => 'This phone number already exists.',
+
+            'state.exists' => 'Selected state is invalid.',
+            'country.required' => 'Country is required.',
+            'country.exists' => 'Selected country is invalid.',
+
+            'pincode.digits_between' => 'Pincode must be between 4 and 10 digits.',
+
+            'website.url' => 'Enter a valid website URL.',
+
+            'logo.image' => 'Logo must be an image.',
+            'logo.mimes' => 'Logo must be jpeg, png, jpg, gif or webp.',
+            'logo.max' => 'Logo must be less than 2MB.',
         ];
+    }
+
+    // Real-time validation
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName, $this->rules());
     }
 
     public function updatingSearch()
@@ -107,7 +146,7 @@ class InstitutesComponent extends Component
         $this->resetValidation();
         $this->resetFields();
         $this->isEdit = false;
-        $this->country_id = 1; // Default to India
+        $this->country = 1; // Default to India
         $this->dispatchBrowserEvent('open-institute-modal');
     }
 
@@ -116,7 +155,7 @@ class InstitutesComponent extends Component
         $this->resetValidation();
         $this->isEdit = true;
 
-        $institute = Institute::findOrFail($id);
+        $institute = Institute::with(['state', 'country'])->findOrFail($id);
 
         $this->fill([
             'recordId' => $institute->id,
@@ -126,8 +165,8 @@ class InstitutesComponent extends Component
             'phone' => $institute->phone,
             'address' => $institute->address,
             'city' => $institute->city,
-            'state_id' => $institute->state_id,
-            'country_id' => $institute->country_id ?? 1,
+            'state' => $institute->state,
+            'country' => $institute->country ?? 1,
             'pincode' => $institute->pincode,
             'website' => $institute->website,
             'status' => $institute->status ? 1 : 0,
@@ -138,6 +177,7 @@ class InstitutesComponent extends Component
 
     public function closeModal()
     {
+        $this->resetValidation();
         $this->resetFields();
         $this->dispatchBrowserEvent('close-institute-modal');
     }
@@ -146,9 +186,9 @@ class InstitutesComponent extends Component
     {
         $this->reset([
             'recordId', 'name', 'code', 'email', 'phone', 'address', 'city',
-            'state_id', 'country_id', 'pincode', 'logo', 'website', 'status', 'isEdit'
+            'state', 'country', 'pincode', 'logo', 'website', 'status', 'isEdit'
         ]);
-        $this->country_id = 1;
+        $this->country = 1;
         $this->status = 1;
     }
 
@@ -166,12 +206,12 @@ class InstitutesComponent extends Component
         $data = [
             'name' => $this->name,
             'code' => $this->code,
-            'email' => $this->email,
-            'phone' => $this->phone,
+            'email' => $this->email ?: null,
+            'phone' => $this->phone ?: null,
             'address' => $this->address,
             'city' => $this->city,
-            'state_id' => $this->state_id,
-            'country_id' => $this->country_id,
+            'state' => $this->state,
+            'country' => $this->country,
             'pincode' => $this->pincode,
             'website' => $this->website,
             'status' => $this->status,
@@ -185,6 +225,7 @@ class InstitutesComponent extends Component
 
         $this->closeModal();
         $this->emit('refreshTable');
+
         $this->dispatchBrowserEvent('show-toast', [
             'type' => 'success',
             'message' => 'Institute created successfully.',
@@ -200,21 +241,23 @@ class InstitutesComponent extends Component
         $data = [
             'name' => $this->name,
             'code' => $this->code,
-            'email' => $this->email,
-            'phone' => $this->phone,
+            'email' => $this->email ?: null,
+            'phone' => $this->phone ?: null,
             'address' => $this->address,
             'city' => $this->city,
-            'state_id' => $this->state_id,
-            'country_id' => $this->country_id,
+            'state' => $this->state,
+            'country' => $this->country,
             'pincode' => $this->pincode,
             'website' => $this->website,
             'status' => $this->status,
         ];
 
         if ($this->logo) {
+
             if ($institute->logo) {
                 Storage::delete('public/institutes/' . $institute->logo);
             }
+
             $data['logo'] = $this->storeLogo($this->logo);
         }
 
@@ -222,6 +265,7 @@ class InstitutesComponent extends Component
 
         $this->closeModal();
         $this->emit('refreshTable');
+
         $this->dispatchBrowserEvent('show-toast', [
             'type' => 'success',
             'message' => 'Institute updated successfully.',
@@ -275,10 +319,9 @@ class InstitutesComponent extends Component
     // Get institutes with filters
     public function getInstitutesProperty()
     {
-        $query = Institute::with(['state', 'country'])
+        $query = Institute::with(['state', 'country', 'users'])
             ->search($this->search)
-            ->byState($this->stateFilter)
-            ->byCountry(1); // Default to India
+            ->byState($this->stateFilter);
 
         if ($this->filter !== 'All') {
             $query->where('status', $this->filter === 'Active' ? 1 : 0);
