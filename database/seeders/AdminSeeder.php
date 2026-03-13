@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\admin\{RoleSeeder, PermissionSeeder};
+use Database\Seeders\admin\{RoleSeeder, PermissionSeeder, CountrySeeder, StateSeeder};
 
 
 class AdminSeeder extends Seeder
@@ -13,7 +13,8 @@ class AdminSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             PermissionSeeder::class,
-
+            CountrySeeder::class,
+            StateSeeder::class,
         ]);
     }
 }

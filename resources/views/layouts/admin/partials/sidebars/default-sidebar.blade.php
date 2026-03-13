@@ -67,6 +67,12 @@
                                     </a>
                                 </li>
 
+                                <li>
+                                    <a href="{{ route('admin.institutes') }}" class="menu-item {{ request()->routeIs('admin.institutes*') ? 'active' : '' }}">
+                                        <i class="ti ti-building-community"></i> Manage Institutes
+                                    </a>
+                                </li>
+
                             </ul>
                         </li>
 
