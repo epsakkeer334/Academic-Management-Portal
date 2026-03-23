@@ -45,4 +45,11 @@ class Course extends BaseModel
 
         return $this->duration;
     }
+
+    /* Scope to get active institutes only
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
 }

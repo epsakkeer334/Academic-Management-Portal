@@ -114,6 +114,82 @@
                     </ul>
                 </li>
 
+                <!-- STUDENT MANAGEMENT -->
+                <li class="menu-title"><span>Student Management</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.students') }}" class="{{ request()->routeIs('admin.students*') ? 'active' : '' }}">
+                                <i class="ti ti-users"></i>
+                                <span>Students</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- EXAMINATION MANAGEMENT -->
+                <li class="menu-title"><span>Examination Management</span></li>
+                <li>
+                    <ul>
+                        <li class="submenu">
+                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*']) ? 'active subdrop' : '' }}">
+                                <i class="ti ti-clipboard-list"></i>
+                                <span>Examinations</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul style="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*']) ? 'display: block;' : '' }}">
+                                <li>
+                                    <a href="{{ route('admin.exams') }}" class="menu-item {{ request()->routeIs('admin.exams*') ? 'active' : '' }}">
+                                        <i class="ti ti-calendar-event"></i> Manage Exams
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.exam-applications') }}" class="menu-item {{ request()->routeIs('admin.exam-applications*') ? 'active' : '' }}">
+                                        <i class="ti ti-file-check"></i> Exam Applications
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- DOCUMENT MANAGEMENT -->
+                <li class="menu-title"><span>Document Management</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.documents') }}" class="{{ request()->routeIs('admin.documents*') ? 'active' : '' }}">
+                                <i class="ti ti-file-text"></i>
+                                <span>DMS</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.mous') }}" class="{{ request()->routeIs('admin.mous*') ? 'active' : '' }}">
+                                <i class="ti ti-file-certificate"></i>
+                                <span>MoU Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- COMPLIANCE & REPORTS -->
+                <li class="menu-title"><span>Compliance & Reports</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.compliance') }}" class="{{ request()->routeIs('admin.compliance*') ? 'active' : '' }}">
+                                <i class="ti ti-shield-check"></i>
+                                <span>Compliance Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reports') }}" class="{{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
+                                <i class="ti ti-chart-bar"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 @endhasrole
 

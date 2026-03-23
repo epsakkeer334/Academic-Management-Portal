@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <!-- Stats Cards (Unique to Users) -->
+    <!-- Stats Cards -->
     <div class="row g-3 mb-3">
         <div class="col-md-3">
             <div class="card shadow-sm border-0">
@@ -36,7 +36,7 @@
                         </div>
                         <div>
                             <h6 class="mb-1">Total Users</h6>
-                            <h4 class="mb-0">{{ $stats['total'] }}</h4>
+                            <h4 class="mb-0">{{ $stats['total'] ?? 0 }}</h4>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                         </div>
                         <div>
                             <h6 class="mb-1">Active Users</h6>
-                            <h4 class="mb-0">{{ $stats['active'] }}</h4>
+                            <h4 class="mb-0">{{ $stats['active'] ?? 0 }}</h4>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                         </div>
                         <div>
                             <h6 class="mb-1">Inactive Users</h6>
-                            <h4 class="mb-0">{{ $stats['inactive'] }}</h4>
+                            <h4 class="mb-0">{{ $stats['inactive'] ?? 0 }}</h4>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                         </div>
                         <div>
                             <h6 class="mb-1">Roles</h6>
-                            <h4 class="mb-0">{{ count($roles) }}</h4>
+                            <h4 class="mb-0">{{ $rolesCount ?? 0 }}</h4>
                         </div>
                     </div>
                 </div>
@@ -89,195 +89,28 @@
         </div>
     </div>
 
-    <!-- Custom Data Table -->
+    <!-- Data Table using common component -->
     <div class="card shadow-sm border-0">
-        <!-- Card Header with Filter -->
-        <div class="card-header bg-white border-bottom">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <h5 class="fw-semibold mb-0">Users List</h5>
-
-                <!-- Using table-filter component - exactly like category -->
-                @include('livewire.common.components.table.table-filter', [
-                    'filter' => $filter,
-                    'options' => [
-                        'All' => 'All',
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive'
-                    ]
-                ])
-            </div>
-        </div>
-
-        <!-- Sub-header with Search, Per Page and Role Filter -->
-        <div class="border-bottom px-3 py-2 bg-light">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Using table-search-sort component for search and per page -->
-                    @include('livewire.common.components.table.table-search-sort')
-
-                    <!-- Additional Role Filter Dropdown -->
-                    <select class="form-select form-select-sm" wire:model="roleFilter" style="width: 150px;">
-                        <option value="">All Roles</option>
-                        @foreach($roles as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table -->
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle mb-0">
-                    <!-- Using table-headers component -->
-                    @include('livewire.common.components.table.table-headers', [
-                        'columns' => [
-                            ['field' => 'id', 'label' => '#', 'sortable' => true],
-                            ['field' => 'user_image', 'label' => 'Photo', 'sortable' => false],
-                            ['field' => 'name', 'label' => 'Name', 'sortable' => true],
-                            ['field' => 'email', 'label' => 'Email', 'sortable' => true],
-                            ['field' => 'phone', 'label' => 'Phone', 'sortable' => true],
-                            ['field' => 'role', 'label' => 'Role', 'sortable' => true],
-                            ['field' => 'status', 'label' => 'Status', 'sortable' => true],
-                            ['field' => 'last_login_at', 'label' => 'Last Login', 'sortable' => true],
-                            ['field' => 'created_at', 'label' => 'Joined', 'sortable' => true],
-                            ['field' => 'action', 'label' => 'Actions', 'sortable' => false],
-                        ]
-                    ])
-                    <tbody>
-                        @forelse($users as $user)
-                            <tr>
-                                <td class="text-center text-muted small">
-                                    {{ $users->firstItem() + $loop->index }}
-                                </td>
-                                <td class="text-center">
-                                    <img src="{{ $user->user_image_url }}"
-                                         alt="{{ $user->name }}"
-                                         class="rounded-circle"
-                                         style="width: 40px; height: 40px; object-fit: cover;">
-                                </td>
-                                <td>
-                                    <h6 class="mb-0 fw-semibold">{{ $user->name }}</h6>
-                                    <small class="text-muted">ID: {{ $user->id }}</small>
-                                </td>
-                                <td>
-                                    <a href="mailto:{{ $user->email }}" class="text-primary">
-                                        <i class="ti ti-mail me-1"></i>{{ $user->email }}
-                                    </a>
-                                </td>
-                                <td>
-                                    @if($user->phone)
-                                        <a href="tel:{{ $user->phone }}" class="text-muted">
-                                            <i class="ti ti-phone me-1"></i>{{ $user->phone }}
-                                        </a>
-                                    @else
-                                        <span class="text-muted small">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge {{ $user->role_badge_class }} badge-sm">
-                                        <i class="ti ti-shield me-1"></i>
-                                        {{ $roles[$user->role] ?? $user->role }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    @if($user->status)
-                                        <span class="badge badge-soft-success d-inline-flex align-items-center badge-sm">
-                                            <i class="ti ti-checks me-1"></i> Active
-                                        </span>
-                                    @else
-                                        <span class="badge badge-soft-danger d-inline-flex align-items-center badge-sm">
-                                            <i class="ti ti-x me-1"></i> Inactive
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($user->last_login_at)
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-2">
-                                                <i class="ti ti-clock {{ $user->is_online ? 'text-success' : 'text-muted' }}"></i>
-                                            </div>
-                                            <div>
-                                                <div class="small">{{ $user->last_login_at->format('d M Y') }}</div>
-                                                <div class="small text-muted">{{ $user->last_login_at->format('h:i A') }}</div>
-                                                @if($user->last_login_ip)
-                                                    <small class="text-muted">
-                                                        <i class="ti ti-world"></i> {{ $user->last_login_ip }}
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @else
-                                        <span class="text-muted small">Never logged in</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <span class="text-muted small">{{ $user->created_at->format('d M Y') }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="d-flex align-items-center justify-content-center gap-1">
-                                        <!-- Edit Button -->
-                                        <button wire:click="edit({{ $user->id }})"
-                                                class="btn btn-sm btn-outline-primary"
-                                                data-bs-toggle="tooltip"
-                                                title="Edit User">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-
-                                        <!-- Change Password Button -->
-                                        <button wire:click="openChangePasswordModal({{ $user->id }})"
-                                                class="btn btn-sm btn-outline-warning"
-                                                data-bs-toggle="tooltip"
-                                                title="Change Password">
-                                            <i class="ti ti-key"></i>
-                                        </button>
-
-                                        @if($user->id != auth()->id())
-                                            <!-- Toggle Status Button -->
-                                            <button wire:click="toggleStatus({{ $user->id }})"
-                                                    class="btn btn-sm btn-outline-{{ $user->status ? 'danger' : 'success' }}"
-                                                    data-bs-toggle="tooltip"
-                                                    title="{{ $user->status ? 'Deactivate' : 'Activate' }} User">
-                                                <i class="ti ti-{{ $user->status ? 'user-x' : 'user-check' }}"></i>
-                                            </button>
-
-                                            <!-- Delete Button -->
-                                            <button wire:click="confirmDelete({{ $user->id }})"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Delete User">
-                                                <i class="ti ti-trash"></i>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center text-muted py-4">
-                                    <i class="ti ti-users fs-2"></i><br>
-                                    No users found
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center p-3 bg-white border-top">
-            <div class="text-muted small">
-                Showing <strong>{{ $users->firstItem() ?? 0 }}</strong> to
-                <strong>{{ $users->lastItem() ?? 0 }}</strong> of
-                <strong>{{ $users->total() }}</strong> entries
-            </div>
-            <div>{{ $users->links() }}</div>
-        </div>
+        <livewire:admin.components.table.data-table
+            :model-class="\App\Models\User::class"
+            :columns="[
+                ['label' => '#', 'field' => 'id', 'sortable' => true],
+                ['label' => 'Name', 'field' => 'name', 'sortable' => true],
+                ['label' => 'Email', 'field' => 'email', 'sortable' => true],
+                ['label' => 'Phone', 'field' => 'phone', 'sortable' => true],
+                ['label' => 'Role', 'field' => 'role', 'type' => 'badge', 'badge_class' => 'bg-info', 'sortable' => true],
+                ['label' => 'Status', 'field' => 'status', 'type' => 'status', 'sortable' => true],
+                ['label' => 'Last Login', 'field' => 'last_login_at', 'type' => 'datetime', 'format' => 'd M Y H:i', 'sortable' => true],
+                ['label' => 'Joined', 'field' => 'created_at', 'type' => 'datetime', 'format' => 'd M Y', 'sortable' => true],
+                ['label' => 'Actions', 'field' => 'actions', 'type' => 'actions', 'actions' => ['edit', 'delete']]
+            ]"
+            :filters="['All' => 'All', 'active' => 'Active', 'inactive' => 'Inactive']"
+            filterField="status"
+            title="Users List"
+        />
     </div>
 
-    <!-- Role Distribution Card (Keep as is - unique to users) -->
+    <!-- Role Distribution Card (Unique to Users) -->
     <div class="row mt-3">
         <div class="col-12">
             <div class="card shadow-sm border-0">
@@ -286,18 +119,20 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        @foreach($roles as $value => $label)
-                            <div class="col-md-3">
-                                <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                    <div>
-                                        <span class="badge {{ $value === 'super-admin' ? 'bg-danger' : 'bg-info' }} badge-sm">
-                                            {{ $label }}
-                                        </span>
+                        @if($roles)
+                            @foreach($roles as $value => $label)
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                        <div>
+                                            <span class="badge {{ $value === 'super-admin' ? 'bg-danger' : 'bg-info' }} badge-sm">
+                                                {{ $label }}
+                                            </span>
+                                        </div>
+                                        <span class="fw-bold">{{ $stats['byRole'][$value] ?? 0 }}</span>
                                     </div>
-                                    <span class="fw-bold">{{ $stats['byRole'][$value] ?? 0 }}</span>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
@@ -341,9 +176,11 @@
                             <label class="form-label fw-medium">User Role *</label>
                             <select class="form-select" wire:model="role">
                                 <option value="">Select Role</option>
-                                @foreach($roles as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
+                                @if($roles)
+                                    @foreach($roles as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                @endif
                             </select>
                             @error('role') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
@@ -375,14 +212,12 @@
 
                                 <!-- Current Image -->
                                 @if($isEdit && $recordId)
-                                    @php $user = \App\Models\User::find($recordId) @endphp
+                                    @php $user = \App\Models\Admin\User::find($recordId) @endphp
                                     @if($user && $user->user_image)
                                         <div>
                                             <label class="form-label fw-medium small">Current Photo:</label>
                                             <img src="{{ $user->user_image_url }}" class="img-thumbnail rounded-circle" style="max-height: 80px; max-width: 80px;">
-                                            <small class="text-muted d-block mt-1">
-                                                Leave empty to keep current photo
-                                            </small>
+                                            <small class="text-muted d-block mt-1">Leave empty to keep current photo</small>
                                         </div>
                                     @endif
                                 @endif
@@ -403,10 +238,8 @@
                                 <input type="password" class="form-control" wire:model="password_confirmation" placeholder="Confirm password">
                                 @error('password_confirmation') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
-                        @endif
 
-                        <!-- Password Requirements -->
-                        @if(!$isEdit)
+                            <!-- Password Requirements -->
                             <div class="col-12">
                                 <div class="alert alert-info py-2 small">
                                     <div class="d-flex align-items-center">
@@ -515,7 +348,6 @@
 <!-- JavaScript -->
 <script>
 document.addEventListener('livewire:load', function () {
-    // Save user function
     window.saveUser = function() {
         if (@this.isEdit) {
             @this.call('update');
@@ -524,12 +356,10 @@ document.addEventListener('livewire:load', function () {
         }
     }
 
-    // Update password function
     window.updatePassword = function() {
         @this.call('updatePassword');
     }
 
-    // Modal management
     const modalConfigs = [
         { name: 'user', id: 'userModal' },
         { name: 'password', id: 'passwordModal' },
@@ -537,28 +367,22 @@ document.addEventListener('livewire:load', function () {
     ];
 
     modalConfigs.forEach(config => {
-        // Open modal
         window.addEventListener(`open-${config.name}-modal`, () => {
             const modal = new bootstrap.Modal(document.getElementById(config.id));
             modal.show();
         });
 
-        // Close modal
         window.addEventListener(`close-${config.name}-modal`, () => {
             const modalElement = document.getElementById(config.id);
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
             if (modalInstance) {
                 modalInstance.hide();
             }
-
-            // Clean up backdrop
             document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
             document.body.classList.remove('modal-open');
         });
     });
 
-    // Initialize tooltips
     const tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipElements.forEach(element => {
         new bootstrap.Tooltip(element);
@@ -566,7 +390,6 @@ document.addEventListener('livewire:load', function () {
 });
 </script>
 
-<!-- Additional CSS -->
 <style>
 .avatar-sm {
     width: 48px;
@@ -576,7 +399,6 @@ document.addEventListener('livewire:load', function () {
     justify-content: center;
 }
 
-/* Role badge colors */
 .bg-purple {
     background-color: #6f42c1 !important;
 }
@@ -585,12 +407,10 @@ document.addEventListener('livewire:load', function () {
     background-color: #20c997 !important;
 }
 
-/* Table row hover effect */
 .table-hover tbody tr:hover {
     background-color: rgba(13, 110, 253, 0.04);
 }
 
-/* Modal styles */
 .modal-header {
     border-bottom: 1px solid #dee2e6;
 }
@@ -599,13 +419,11 @@ document.addEventListener('livewire:load', function () {
     border-top: 1px solid #dee2e6;
 }
 
-/* Image preview */
 .img-thumbnail.rounded-circle {
     border-radius: 50% !important;
     padding: 2px;
 }
 
-/* Badge styles */
 .badge.bg-danger { background-color: #dc3545 !important; }
 .badge.bg-primary { background-color: #0d6efd !important; }
 .badge.bg-success { background-color: #198754 !important; }
@@ -615,7 +433,6 @@ document.addEventListener('livewire:load', function () {
 .badge.bg-purple { background-color: #6f42c1 !important; }
 .badge.bg-teal { background-color: #20c997 !important; }
 
-/* Soft badge variants */
 .badge-soft-success {
     background-color: rgba(25, 135, 84, 0.1);
     color: #198754;

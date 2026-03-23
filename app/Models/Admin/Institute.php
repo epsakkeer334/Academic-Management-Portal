@@ -149,6 +149,14 @@ class Institute extends BaseModel
     }
 
     /**
+     * Scope to get active institutes only
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    /**
      * Get formatted created at.
      */
     public function getFormattedCreatedAtAttribute()

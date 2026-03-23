@@ -67,6 +67,13 @@ class Curriculum extends BaseModel
         return $this->status ? 'Active' : 'Inactive';
     }
 
+    /* Scope to get active institutes only
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     /**
      * Scope a query to search curriculums.
      */

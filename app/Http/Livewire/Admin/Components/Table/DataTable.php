@@ -25,10 +25,10 @@ class DataTable extends Component
     public $extraFilters = [];
     public $queryModifier = null;
 
-    // Vendor filtering properties
+    // Add these properties with defaults to prevent errors
+    public $showVendorColumn = false;
     public $vendorFilterEnabled = false;
     public $vendorId = null;
-    public $showVendorColumn = false;
 
     // Soft delete properties
     public bool $showDeletedButton = false;
@@ -48,8 +48,6 @@ class DataTable extends Component
         $filterField = 'status',
         $actionView = null,
         $title = null,
-        $vendorFilterEnabled = false,
-        $showVendorColumn = null,
         $extraFilters = [],
         $queryModifier = null,
         $perPage = 10,
@@ -72,17 +70,13 @@ class DataTable extends Component
         $this->search = $search;
         $this->deletedConfig = $deletedConfig ?: ['enabled' => false];
 
-        // Vendor filtering setup
-        $this->vendorFilterEnabled = $vendorFilterEnabled;
-        $this->showVendorColumn = $showVendorColumn ?? $this->shouldShowVendorColumn();
-
-        // Set vendor ID if filtering is enabled
-        if ($this->vendorFilterEnabled) {
-            $this->vendorId = $this->getVendorId();
-        }
+        // Initialize vendor-related properties to false by default
+        $this->showVendorColumn = false;
+        $this->vendorFilterEnabled = false;
+        $this->vendorId = null;
     }
 
-    // Check if user is super admin
+    // Check if user is super admin - simplified since no vendor functionality
     public function isSuperAdmin()
     {
         $user = auth()->user();
@@ -95,20 +89,16 @@ class DataTable extends Component
         return strtolower($user->role ?? '') === 'super-admin';
     }
 
-    // Get vendor ID for vendor users
+    // Get vendor ID for vendor users - return null since no vendor functionality
     public function getVendorId()
     {
-        if ($this->isSuperAdmin()) {
-            return null; // Super admin sees all data
-        }
-
-        return auth()->user()->vendor->id ?? null;
+        return null; // No vendor functionality in this project
     }
 
-    // Determine if vendor column should be shown
+    // Determine if vendor column should be shown - always false
     public function shouldShowVendorColumn()
     {
-        return $this->isSuperAdmin() && Schema::hasColumn((new $this->modelClass)->getTable(), 'vendor_id');
+        return false; // Disable vendor column since no vendor functionality
     }
 
     public function setFilter($filter)
@@ -148,10 +138,10 @@ class DataTable extends Component
             }
         }
 
-        // Add vendor relation if needed
-        if ($this->showVendorColumn || $this->vendorFilterEnabled) {
-            $relations[] = 'vendor';
-        }
+        // Remove vendor relation since it's not needed
+        // if ($this->showVendorColumn || $this->vendorFilterEnabled) {
+        //     $relations[] = 'vendor';
+        // }
 
         return array_unique($relations);
     }
@@ -321,10 +311,11 @@ class DataTable extends Component
             $query->with($relationsToLoad);
         }
 
+        // Remove vendor filtering since no vendor functionality
         // Apply vendor filtering
-        if ($this->vendorFilterEnabled && $this->vendorId && !$this->isSuperAdmin()) {
-            $query->where('vendor_id', $this->vendorId);
-        }
+        // if ($this->vendorFilterEnabled && $this->vendorId && !$this->isSuperAdmin()) {
+        //     $query->where('vendor_id', $this->vendorId);
+        // }
 
         // Apply search
         $this->applySearch($query);
