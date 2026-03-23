@@ -212,7 +212,7 @@
 
                                 <!-- Current Image -->
                                 @if($isEdit && $recordId)
-                                    @php $user = \App\Models\Admin\User::find($recordId) @endphp
+                                    @php $user = \App\Models\User::find($recordId) @endphp
                                     @if($user && $user->user_image)
                                         <div>
                                             <label class="form-label fw-medium small">Current Photo:</label>

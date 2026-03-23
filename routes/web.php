@@ -20,7 +20,7 @@ use App\Http\Livewire\Admin\Documents\DocumentsComponent;
 use App\Http\Livewire\Admin\Mous\MousComponent;
 use App\Http\Livewire\Admin\Compliance\ComplianceComponent;
 use App\Http\Livewire\Admin\Reports\ReportsComponent;
-
+use App\Http\Livewire\Admin\SyllabusMappings\SyllabusMappingsComponent;
 
 // front end section
 
@@ -34,14 +34,16 @@ Route::get('/logout', function () {Auth::logout();
 })->name('admin.logout');
 
 
-Route::prefix('admin')->middleware(['auth', 'role:super-admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Dashboard - component will render role-based sections
     Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
 
-    Route::get('/users', UsersComponent::class)->name('admin.users');
+    // Super-admin only management
+    Route::get('/users', UsersComponent::class)->name('admin.users')->middleware('role:super-admin');
+    Route::get('/roles', RolesComponent::class)->name('admin.roles')->middleware('role:super-admin');
+    Route::get('/permissions', PermissionsComponent::class)->name('admin.permissions')->middleware('role:super-admin');
 
-    Route::get('/roles', RolesComponent::class)->name('admin.roles');
-    Route::get('/permissions', PermissionsComponent::class)->name('admin.permissions');
-
+    // Other admin sections (permission control should be applied inside components or via policies)
     Route::get('/courses', CoursesComponent::class)->name('admin.courses');
     Route::get('/curriculums', CurriculumsComponent::class)->name('admin.curriculums');
     Route::get('/institutes', InstitutesComponent::class)->name('admin.institutes');
@@ -54,6 +56,9 @@ Route::prefix('admin')->middleware(['auth', 'role:super-admin'])->group(function
     Route::get('/mous', MousComponent::class)->name('admin.mous');
     Route::get('/compliance', ComplianceComponent::class)->name('admin.compliance');
     Route::get('/reports', ReportsComponent::class)->name('admin.reports');
+
+    // Syllabus mappings
+    Route::get('/syllabus-mappings', SyllabusMappingsComponent::class)->name('admin.syllabus-mappings');
 
 });
 

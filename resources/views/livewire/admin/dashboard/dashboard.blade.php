@@ -1,4 +1,54 @@
 <div class="content">
+    <div class="d-md-flex d-block align-items-center justify-content-between page-breadcrumb mb-3">
+        <div class="my-auto mb-2">
+            <h2 class="mb-1 fw-semibold">Admin Dashboard</h2>
+            <nav>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="ti ti-smart-home"></i></a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {{-- Super Admin panel --}}
+        @hasrole('super-admin')
+            @include('livewire.admin.dashboard.partials.super-admin')
+        @endhasrole
+
+        {{-- Institute Admin --}}
+        @hasrole('institute-admin')
+            @include('livewire.admin.dashboard.partials.institute-admin')
+        @endhasrole
+
+        {{-- Accounts --}}
+        @hasrole('accounts')
+            @include('livewire.admin.dashboard.partials.accounts')
+        @endhasrole
+
+        {{-- Training Manager --}}
+        @hasrole('training-manager')
+            @include('livewire.admin.dashboard.partials.training-manager')
+        @endhasrole
+
+        {{-- Head of Training (HOT) --}}
+        @hasrole('hot')
+            @include('livewire.admin.dashboard.partials.hot')
+        @endhasrole
+
+        {{-- BiC --}}
+        @hasrole('bic')
+            @include('livewire.admin.dashboard.partials.bic')
+        @endhasrole
+
+        {{-- Faculty --}}
+        @hasrole('faculty')
+            @include('livewire.admin.dashboard.partials.faculty')
+        @endhasrole
+    </div>
+</div>
+<div class="content">
 
 				<!-- Breadcrumb -->
 				<div class="d-md-flex d-block align-items-center justify-content-between page-breadcrumb mb-3">

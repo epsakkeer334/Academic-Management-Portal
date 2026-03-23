@@ -16,7 +16,18 @@ class Dashboard extends Component
 
     public function render()
     {
+        $user = auth()->user();
+        $roleNames = [];
+        if ($user) {
+            if (method_exists($user, 'getRoleNames')) {
+                $roleNames = $user->getRoleNames()->toArray();
+            } else {
+                $roleNames = [$user->role ?? ''];
+            }
+        }
+
         return view('livewire.admin.dashboard.dashboard', [
+            'roles' => $roleNames,
         ])->layout('layouts.admin.master');
     }
 }

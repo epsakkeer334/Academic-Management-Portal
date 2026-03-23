@@ -39,13 +39,11 @@
                     </ul>
                 </li>
 
-                @hasrole('super-admin')
-
-                <!-- GENERAL MANAGEMENT -->
+                <!-- GENERAL MANAGEMENT (visible to users with manage/view permissions) -->
+                @canany(['view_institutes', 'manage_institutes', 'manage_exams', 'manage_students'])
                 <li class="menu-title"><span>General Management</span></li>
                 <li>
                     <ul>
-                        <!-- Categories -->
                         <li class="submenu">
                             <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'active subdrop' : '' }}">
                                 <i class="ti ti-book"></i>
@@ -53,36 +51,41 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'display: block;' : '' }}">
-
+                                @can('manage_exams')
                                 <li>
                                     <a href="{{ route('admin.courses') }}" class="menu-item {{ request()->routeIs('admin.courses*') ? 'active' : '' }}">
                                         <i class="ti ti-book"></i> Manage Courses
                                     </a>
                                 </li>
+                                @endcan
 
-
+                                @can('manage_exams')
                                 <li>
                                     <a href="{{ route('admin.curriculums') }}" class="menu-item {{ request()->routeIs('admin.curriculums*') ? 'active' : '' }}">
                                         <i class="ti ti-books"></i> Manage Curriculums
                                     </a>
                                 </li>
+                                @endcan
 
+                                @can('view_institutes')
                                 <li>
                                     <a href="{{ route('admin.institutes') }}" class="menu-item {{ request()->routeIs('admin.institutes*') ? 'active' : '' }}">
                                         <i class="ti ti-building-community"></i> Manage Institutes
                                     </a>
                                 </li>
+                                @endcan
                             </ul>
                         </li>
                     </ul>
                 </li>
 
+                @endcanany
 
-                <!-- PRODUCTS MANAGEMENT -->
+                <!-- ACCESS MANAGEMENT (super-admin only) -->
+                @hasrole('super-admin')
                 <li class="menu-title"><span>Access Management</span></li>
                 <li>
                     <ul>
-                        <!-- Categories -->
                         <li class="submenu">
                             <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.users*' ,'admin.roles*', 'admin.permissions*']) ? 'active subdrop' : '' }}">
                                 <i class="ti ti-users"></i>
@@ -90,7 +93,6 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul style="{{ isActiveMenu(['admin.users*', 'admin.roles*', 'admin.permissions*']) ? 'display: block;' : '' }}">
-
                                 <li>
                                     <a href="{{ route('admin.users') }}" class="menu-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                                         <i class="ti ti-users"></i> Manage Users
@@ -109,12 +111,12 @@
                                 </li>
                             </ul>
                         </li>
-
-
                     </ul>
                 </li>
+                @endhasrole
 
                 <!-- STUDENT MANAGEMENT -->
+                @can('manage_students')
                 <li class="menu-title"><span>Student Management</span></li>
                 <li>
                     <ul>
@@ -126,34 +128,51 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
 
                 <!-- EXAMINATION MANAGEMENT -->
+                @canany(['manage_exams','approve_exam_applications','map_subjects','tm_exam_approval'])
                 <li class="menu-title"><span>Examination Management</span></li>
                 <li>
                     <ul>
                         <li class="submenu">
-                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*']) ? 'active subdrop' : '' }}">
+                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*', 'admin.syllabus-mappings*']) ? 'active subdrop' : '' }}">
                                 <i class="ti ti-clipboard-list"></i>
                                 <span>Examinations</span>
                                 <span class="menu-arrow"></span>
                             </a>
-                            <ul style="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*']) ? 'display: block;' : '' }}">
+                            <ul style="{{ isActiveMenu(['admin.exams*', 'admin.exam-applications*', 'admin.syllabus-mappings*']) ? 'display: block;' : '' }}">
+                                @can('manage_exams')
                                 <li>
                                     <a href="{{ route('admin.exams') }}" class="menu-item {{ request()->routeIs('admin.exams*') ? 'active' : '' }}">
                                         <i class="ti ti-calendar-event"></i> Manage Exams
                                     </a>
                                 </li>
+                                @endcan
+
+                                @can('approve_exam_applications')
                                 <li>
                                     <a href="{{ route('admin.exam-applications') }}" class="menu-item {{ request()->routeIs('admin.exam-applications*') ? 'active' : '' }}">
                                         <i class="ti ti-file-check"></i> Exam Applications
                                     </a>
                                 </li>
+                                @endcan
+
+                                @can('map_subjects')
+                                <li>
+                                    <a href="{{ route('admin.syllabus-mappings') }}" class="menu-item {{ request()->routeIs('admin.syllabus-mappings*') ? 'active' : '' }}">
+                                        <i class="ti ti-layout-grid"></i> Syllabus Mappings
+                                    </a>
+                                </li>
+                                @endcan
                             </ul>
                         </li>
                     </ul>
                 </li>
+                @endcanany
 
                 <!-- DOCUMENT MANAGEMENT -->
+                @canany(['manage_documents','hot_approve_documents'])
                 <li class="menu-title"><span>Document Management</span></li>
                 <li>
                     <ul>
@@ -171,8 +190,10 @@
                         </li>
                     </ul>
                 </li>
+                @endcanany
 
                 <!-- COMPLIANCE & REPORTS -->
+                @canany(['view_compliance_dashboard','view_reports'])
                 <li class="menu-title"><span>Compliance & Reports</span></li>
                 <li>
                     <ul>
@@ -190,8 +211,7 @@
                         </li>
                     </ul>
                 </li>
-
-                @endhasrole
+                @endcanany
 
             </ul>
         </div>
