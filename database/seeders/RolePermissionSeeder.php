@@ -38,6 +38,7 @@ class RolePermissionSeeder extends Seeder
 
             // Examination Management
             'manage_exams' => 'Create and manage exams',
+            'manage_subjects' => 'Create and manage subjects',
             'map_subjects' => 'Map subjects to exams and institutes',
             'create_exam_questions' => 'Create exam questions',
             'submit_exam_results' => 'Submit exam results',
@@ -88,6 +89,7 @@ class RolePermissionSeeder extends Seeder
             'manage_students',
             'verify_student_documents',
             'manage_exams',
+            'manage_subjects',
             'map_subjects',
             'submit_exam_results',
             'generate_marksheets',
@@ -112,6 +114,7 @@ class RolePermissionSeeder extends Seeder
             'manage_students',
             'tm_exam_approval', // TM gate approval
             'submit_exam_results',
+            'manage_subjects',
             'generate_marksheets',
             'hot_approve_documents',
             'view_reports',

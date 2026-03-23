@@ -21,6 +21,7 @@ use App\Http\Livewire\Admin\Mous\MousComponent;
 use App\Http\Livewire\Admin\Compliance\ComplianceComponent;
 use App\Http\Livewire\Admin\Reports\ReportsComponent;
 use App\Http\Livewire\Admin\SyllabusMappings\SyllabusMappingsComponent;
+use App\Http\Livewire\Admin\Subjects\SubjectsComponent;
 
 // front end section
 
@@ -50,6 +51,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/institutes/{instituteId}/users', InstituteUsersComponent::class)->name('admin.institute.users');
 
     Route::get('/students', StudentsComponent::class)->name('admin.students');
+    Route::get('/subjects', SubjectsComponent::class)->name('admin.subjects');
     Route::get('/exams', ExamsComponent::class)->name('admin.exams');
     Route::get('/exam-applications', ExamApplicationsComponent::class)->name('admin.exam-applications');
     Route::get('/documents', DocumentsComponent::class)->name('admin.documents');

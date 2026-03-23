@@ -45,12 +45,12 @@
                 <li>
                     <ul>
                         <li class="submenu">
-                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'active subdrop' : '' }}">
+                            <a href="javascript:void(0);" class="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.subjects*', 'admin.institutes*']) ? 'active subdrop' : '' }}">
                                 <i class="ti ti-book"></i>
                                 <span>General Management</span>
                                 <span class="menu-arrow"></span>
                             </a>
-                            <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.institutes*']) ? 'display: block;' : '' }}">
+                            <ul style="{{ isActiveMenu(['admin.courses*', 'admin.curriculums*', 'admin.subjects*', 'admin.institutes*']) ? 'display: block;' : '' }}">
                                 @can('manage_exams')
                                 <li>
                                     <a href="{{ route('admin.courses') }}" class="menu-item {{ request()->routeIs('admin.courses*') ? 'active' : '' }}">
@@ -63,6 +63,14 @@
                                 <li>
                                     <a href="{{ route('admin.curriculums') }}" class="menu-item {{ request()->routeIs('admin.curriculums*') ? 'active' : '' }}">
                                         <i class="ti ti-books"></i> Manage Curriculums
+                                    </a>
+                                </li>
+                                @endcan
+
+                                @can('manage_exams')
+                                <li>
+                                    <a href="{{ route('admin.subjects') }}" class="menu-item {{ request()->routeIs('admin.subjects*') ? 'active' : '' }}">
+                                        <i class="ti ti-list"></i> Manage Subjects
                                     </a>
                                 </li>
                                 @endcan
